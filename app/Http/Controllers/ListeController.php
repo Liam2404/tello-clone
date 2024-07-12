@@ -2,26 +2,40 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BoardList;
+use App\Models\Liste;
+use App\Models\Board;
 use Illuminate\Http\Request;
 
-class BoardListController extends Controller
+class ListeController extends Controller
 {
-    public function store(Request $request)
+    public function index($boardId)
     {
-        $list = BoardList::create($request->all());
-        return response()->json($list);
+        $board = Board::findOrFail($boardId);
+        $listes = Liste::where('board_id', $boardId)->get();
+
+        return view('listes.index', compact('board', 'listes'));
     }
 
-    public function update(Request $request, BoardList $list)
+    public function create($boardId)
     {
-        $list->update($request->all());
-        return response()->json($list);
+        $board = Board::findOrFail($boardId);
+        return view('listes.create', compact('board'));
     }
 
-    public function destroy(BoardList $list)
+    public function store(Request $request, $boardId)
     {
-        $list->delete();
-        return response()->json(['message' => 'List deleted']);
+        $board = Board::findOrFail($boardId);
+        $request->validate([
+            'title' => 'required',
+        ]);
+
+        $liste = new Liste([
+            'title' => $request->get('title'),
+            'board_id' => $board->id
+        ]);
+
+        $liste->save();
+
+        return redirect()->route('boards.show', $board->id)->with('success', 'Liste créée avec succès');
     }
 }

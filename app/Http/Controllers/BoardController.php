@@ -26,7 +26,7 @@ class BoardController extends Controller
 
     public function show($id)
     {
-        $board = Board::find($id);
+        $board = Board::with('cards')->findOrFail($id);
         return view('boards.show', compact('board'));
     }
 

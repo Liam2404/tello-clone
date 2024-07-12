@@ -16,8 +16,13 @@ class Board extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function lists()
+    public function listes()
     {
         return $this->hasMany(Liste::class);
+    }
+
+    public function cards()
+    {
+        return $this->hasManyThrough(Card::class, Liste::class);
     }
 }
